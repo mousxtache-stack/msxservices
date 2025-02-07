@@ -1,15 +1,14 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import { CheckoutForm } from "@/components/CheckoutForm";
+import { EmptyCart } from "@/components/cart/EmptyCart";
+import { CartItemList } from "@/components/cart/CartItemList";
+import { OrderSummary } from "@/components/cart/OrderSummary";
+import { PaymentSection } from "@/components/cart/PaymentSection";
 
 const stripePromise = loadStripe("pk_test_51OsC74LZMGFXxyWFKcLxW5oWk4Vy4WJUPRnkS0PmghGGZT5ZuRxkrTVHv7fBQfGkJ8JuURFcPR60tSLUNWW2JtB400Wc4sJqAV");
 
@@ -40,7 +39,6 @@ const Cart = () => {
     }
     fetchCartItems();
     
-    // Check for order status after payment
     const orderId = searchParams.get("orderId");
     if (orderId) {
       checkOrderStatus(orderId);
@@ -62,7 +60,7 @@ const Cart = () => {
           title: "Paiement réussi !",
           description: "Votre commande a été validée avec succès.",
         });
-        setCartItems([]); // Clear cart after successful payment
+        setCartItems([]);
       }
     } catch (error) {
       console.error("Error checking order status:", error);
@@ -121,10 +119,8 @@ const Cart = () => {
 
     setIsSubmitting(true);
     try {
-      // Calculate total amount
       const totalAmount = cartItems.reduce((sum, item) => sum + item.price, 0);
 
-      // Create order
       const { data: orderData, error: orderError } = await supabase
         .from("orders")
         .insert({
@@ -141,7 +137,6 @@ const Cart = () => {
 
       if (orderError) throw orderError;
 
-      // Create order items
       const orderItems = cartItems.map((item) => ({
         order_id: orderData.id,
         service_title: item.service_title,
@@ -154,7 +149,6 @@ const Cart = () => {
 
       if (itemsError) throw itemsError;
 
-      // Initialize payment using Supabase Edge Function
       const { data: paymentData, error: paymentError } = await supabase.functions
         .invoke('create-payment', {
           body: { orderId: orderData.id }
@@ -188,119 +182,36 @@ const Cart = () => {
 
   const totalAmount = cartItems.reduce((sum, item) => sum + item.price, 0);
 
-  const appearance = {
-    theme: 'stripe' as const,
-    variables: {
-      colorPrimary: '#0f172a',
-    },
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8">Votre Panier</h1>
         
         {cartItems.length === 0 ? (
-          <Card className="p-6 text-center">
-            <p>Votre panier est vide</p>
-            <Button 
-              onClick={() => navigate("/")}
-              className="mt-4"
-            >
-              Retour aux services
-            </Button>
-          </Card>
+          <EmptyCart />
         ) : clientSecret ? (
-          <div className="max-w-md mx-auto">
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Paiement</h2>
-              <Elements 
-                stripe={stripePromise} 
-                options={{ 
-                  clientSecret,
-                  appearance
-                }}
-              >
-                <CheckoutForm orderId={currentOrderId!} />
-              </Elements>
-            </Card>
-          </div>
+          <PaymentSection 
+            clientSecret={clientSecret}
+            stripePromise={stripePromise}
+            orderId={currentOrderId!}
+          />
         ) : (
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
-              <Card className="p-6">
-                {cartItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex justify-between items-center py-4 border-b last:border-0"
-                  >
-                    <div>
-                      <h3 className="font-medium">{item.service_title}</h3>
-                      <p className="text-sm text-gray-600">{item.price}€</p>
-                    </div>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleRemoveItem(item.id)}
-                    >
-                      Supprimer
-                    </Button>
-                  </div>
-                ))}
-              </Card>
-            </div>
-
-            <div>
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Récapitulatif</h2>
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between">
-                    <span>Total</span>
-                    <span className="font-semibold">{totalAmount}€</span>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubmitOrder} className="space-y-4">
-                  <div>
-                    <Label htmlFor="customerName">Nom complet</Label>
-                    <Input
-                      id="customerName"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="customerEmail">Email</Label>
-                    <Input
-                      id="customerEmail"
-                      type="email"
-                      value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="customerPhone">Téléphone (optionnel)</Label>
-                    <Input
-                      id="customerPhone"
-                      type="tel"
-                      value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
-                    />
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "En cours..." : "Procéder au paiement"}
-                  </Button>
-                </form>
-              </Card>
-            </div>
+            <CartItemList 
+              items={cartItems}
+              onRemoveItem={handleRemoveItem}
+            />
+            <OrderSummary 
+              totalAmount={totalAmount}
+              customerName={customerName}
+              customerEmail={customerEmail}
+              customerPhone={customerPhone}
+              isSubmitting={isSubmitting}
+              onCustomerNameChange={setCustomerName}
+              onCustomerEmailChange={setCustomerEmail}
+              onCustomerPhoneChange={setCustomerPhone}
+              onSubmit={handleSubmitOrder}
+            />
           </div>
         )}
       </div>
