@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -155,22 +154,16 @@ const Cart = () => {
 
       if (itemsError) throw itemsError;
 
-      // Initialize payment
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-payment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({
-          orderId: orderData.id,
-        }),
-      });
+      // Initialize payment using Supabase Edge Function
+      const { data: paymentData, error: paymentError } = await supabase.functions
+        .invoke('create-payment', {
+          body: { orderId: orderData.id }
+        });
 
-      const { clientSecret, error: paymentError } = await response.json();
-      if (paymentError) throw new Error(paymentError);
+      if (paymentError) throw new Error(paymentError.message);
+      if (!paymentData?.clientSecret) throw new Error('No client secret received');
 
-      setClientSecret(clientSecret);
+      setClientSecret(paymentData.clientSecret);
       setCurrentOrderId(orderData.id);
 
     } catch (error) {
@@ -196,7 +189,7 @@ const Cart = () => {
   const totalAmount = cartItems.reduce((sum, item) => sum + item.price, 0);
 
   const appearance = {
-    theme: 'stripe',
+    theme: 'stripe' as const,
     variables: {
       colorPrimary: '#0f172a',
     },
