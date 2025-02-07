@@ -15,40 +15,40 @@ export type Database = {
           id: string
           price: number
           service_title: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
           price: number
           service_title: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
           price?: number
           service_title?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
       order_items: {
         Row: {
           id: string
-          order_id: string | null
+          order_id: string
           price: number
           service_title: string
         }
         Insert: {
           id?: string
-          order_id?: string | null
+          order_id: string
           price: number
           service_title: string
         }
         Update: {
           id?: string
-          order_id?: string | null
+          order_id?: string
           price?: number
           service_title?: string
         }
@@ -71,7 +71,7 @@ export type Database = {
           id: string
           status: string
           total_amount: number
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -81,7 +81,7 @@ export type Database = {
           id?: string
           status?: string
           total_amount: number
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -91,7 +91,7 @@ export type Database = {
           id?: string
           status?: string
           total_amount?: number
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
