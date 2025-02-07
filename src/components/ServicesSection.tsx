@@ -58,6 +58,9 @@ export const ServicesSection = () => {
         title: "Service ajouté au panier",
         description: `${service.title} a été ajouté à votre panier.`,
       });
+      
+      // Navigate to cart after adding item
+      navigate("/cart");
     } catch (error: any) {
       toast({
         variant: "destructive",
