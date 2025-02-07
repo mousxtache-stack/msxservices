@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,11 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { CheckoutForm } from "@/components/CheckoutForm";
+
+const stripePromise = loadStripe("pk_test_51OsC74LZMGFXxyWFKcLxW5oWk4Vy4WJUPRnkS0PmghGGZT5ZuRxkrTVHv7fBQfGkJ8JuURFcPR60tSLUNWW2JtB400Wc4sJqAV");
 
 interface CartItem {
   id: string;
@@ -22,9 +27,12 @@ const Cart = () => {
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [clientSecret, setClientSecret] = useState("");
+  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (!user) {
@@ -32,7 +40,35 @@ const Cart = () => {
       return;
     }
     fetchCartItems();
-  }, [user, navigate]);
+    
+    // Check for order status after payment
+    const orderId = searchParams.get("orderId");
+    if (orderId) {
+      checkOrderStatus(orderId);
+    }
+  }, [user, navigate, searchParams]);
+
+  const checkOrderStatus = async (orderId: string) => {
+    try {
+      const { data: order, error } = await supabase
+        .from("orders")
+        .select("payment_status")
+        .eq("id", orderId)
+        .single();
+
+      if (error) throw error;
+
+      if (order.payment_status === "succeeded") {
+        toast({
+          title: "Paiement réussi !",
+          description: "Votre commande a été validée avec succès.",
+        });
+        setCartItems([]); // Clear cart after successful payment
+      }
+    } catch (error) {
+      console.error("Error checking order status:", error);
+    }
+  };
 
   const fetchCartItems = async () => {
     try {
@@ -98,6 +134,8 @@ const Cart = () => {
           customer_email: customerEmail,
           customer_phone: customerPhone,
           total_amount: totalAmount,
+          status: "pending",
+          payment_status: "pending"
         })
         .select()
         .single();
@@ -117,22 +155,24 @@ const Cart = () => {
 
       if (itemsError) throw itemsError;
 
-      // Clear cart
-      const { error: clearError } = await supabase
-        .from("cart_items")
-        .delete()
-        .eq("user_id", user.id);
-
-      if (clearError) throw clearError;
-
-      setCartItems([]);
-      toast({
-        title: "Commande validée !",
-        description: "Votre commande a été enregistrée avec succès.",
+      // Initialize payment
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-payment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          orderId: orderData.id,
+        }),
       });
 
-      // Navigate to success page or show success message
-      navigate("/");
+      const { clientSecret, error: paymentError } = await response.json();
+      if (paymentError) throw new Error(paymentError);
+
+      setClientSecret(clientSecret);
+      setCurrentOrderId(orderData.id);
+
     } catch (error) {
       console.error("Error submitting order:", error);
       toast({
@@ -155,6 +195,13 @@ const Cart = () => {
 
   const totalAmount = cartItems.reduce((sum, item) => sum + item.price, 0);
 
+  const appearance = {
+    theme: 'stripe',
+    variables: {
+      colorPrimary: '#0f172a',
+    },
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-4">
@@ -170,6 +217,21 @@ const Cart = () => {
               Retour aux services
             </Button>
           </Card>
+        ) : clientSecret ? (
+          <div className="max-w-md mx-auto">
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Paiement</h2>
+              <Elements 
+                stripe={stripePromise} 
+                options={{ 
+                  clientSecret,
+                  appearance
+                }}
+              >
+                <CheckoutForm orderId={currentOrderId!} />
+              </Elements>
+            </Card>
+          </div>
         ) : (
           <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
@@ -241,7 +303,7 @@ const Cart = () => {
                     className="w-full"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "En cours..." : "Commander"}
+                    {isSubmitting ? "En cours..." : "Procéder au paiement"}
                   </Button>
                 </form>
               </Card>
