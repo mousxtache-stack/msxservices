@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
@@ -8,52 +7,93 @@ import { OrderList } from "@/components/dashboard/OrderList";
 const Dashboard = () => {
   const { user } = useAuth();
   
-  const { data: profile } = useQuery({
-    queryKey: ['profile'],
+  console.log("Utilisateur connecté:", user);
+
+  // Récupération du profil (avec le rôle)
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ["profile"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user?.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
         .single();
+
+      if (error) {
+        console.error("Erreur récupération du profil:", error);
+        throw error;
+      }
       
-      if (error) throw error;
+      console.log("Profil récupéré:", data);
       return data;
     },
     enabled: !!user,
   });
 
   const { data: orders, isLoading: ordersLoading } = useQuery({
-    queryKey: ['orders'],
+    queryKey: ["orders", profile?.role], // On suit aussi le rôle pour réactualiser si besoin
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data;
+      if (!profile) {
+        console.warn("Profil non encore chargé, attente...");
+        return [];
+      }
+  
+      if (profile.role === "admin") {
+        console.log("Admin détecté, récupération de toutes les commandes...");
+        const { data, error } = await supabase
+          .from("orders")
+          .select("*")
+          .order("created_at", { ascending: false });
+  
+        if (error) {
+          console.error("Erreur récupération commandes (Admin):", error);
+          throw error;
+        }
+  
+        console.log("Commandes récupérées (Admin):", data);
+        return data;
+      } else {
+        console.log("Utilisateur normal, récupération des commandes personnelles...");
+        const { data, error } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("user_id", user?.id)
+          .order("created_at", { ascending: false });
+  
+        if (error) {
+          console.error("Erreur récupération commandes (Utilisateur):", error);
+          throw error;
+        }
+  
+        console.log("Commandes récupérées (Utilisateur):", data);
+        return data;
+      }
     },
-    enabled: !!user,
+    enabled: !!user && profile !== undefined,
   });
+  
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-        
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-2">Profil</h2>
-            <p className="text-gray-600">{profile?.full_name || 'Non renseigné'}</p>
-          </Card>
-          
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-2">Commandes</h2>
-            <p className="text-gray-600">{orders?.length || 0} commande(s)</p>
-          </Card>
-        </div>
+
+        {profileLoading ? (
+          <p>Chargement du profil...</p>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-2">Profil</h2>
+              <p className="text-gray-600">{profile?.full_name || "Non renseigné"}</p>
+              <p className="text-gray-600 font-semibold">Rôle: {profile?.role}</p>
+            </Card>
+
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-2">Commandes</h2>
+              <p className="text-gray-600">{orders?.length || 0} commande(s)</p>
+            </Card>
+          </div>
+        )}
 
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Historique des commandes</h2>
