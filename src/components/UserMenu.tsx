@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export const UserMenu = () => {
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -45,11 +45,9 @@ export const UserMenu = () => {
         <DropdownMenuItem onClick={() => handleNavigate("/cart")}>
           Panier
         </DropdownMenuItem>
-        {isAdmin && (
-          <DropdownMenuItem onClick={() => handleNavigate("/dashboard")}>
-            Dashboard
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem onClick={() => handleNavigate("/dashboard")}>
+          Dashboard
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
