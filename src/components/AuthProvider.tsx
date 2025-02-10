@@ -52,20 +52,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsAdmin(isUserAdmin);
       } else {
         setIsAdmin(false);
+        if (location.pathname === '/dashboard') {
+          navigate('/auth');
+        }
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate, location.pathname]);
 
   // Protect dashboard route
   useEffect(() => {
-    if (!loading) {
-      if (location.pathname === '/dashboard' && !isAdmin) {
-        toast.error("Accès non autorisé. Vous devez être administrateur pour accéder au dashboard.");
-        navigate('/');
-      }
+    if (!loading && location.pathname === '/dashboard' && !isAdmin) {
+      toast.error("Accès non autorisé. Vous devez être administrateur pour accéder au dashboard.");
+      navigate('/');
     }
   }, [loading, isAdmin, location.pathname, navigate]);
 
