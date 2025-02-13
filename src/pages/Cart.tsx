@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/components/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { loadStripe } from "@stripe/stripe-js";
@@ -11,7 +10,13 @@ import { OrderSummary } from "@/components/cart/OrderSummary";
 import { PaymentSection } from "@/components/cart/PaymentSection";
 import { toast } from "sonner";
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+// Vérification de la présence de la clé publique Stripe
+const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+if (!stripePublicKey) {
+  console.error('La clé publique Stripe n\'est pas configurée');
+}
+
+const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
 
 interface CartItem {
   id: string;
@@ -35,6 +40,10 @@ const Cart = () => {
   useEffect(() => {
     if (!user) {
       navigate("/auth");
+      return;
+    }
+    if (!stripePromise) {
+      toast.error("Le système de paiement n'est pas correctement configuré.");
       return;
     }
     fetchCartItems();
@@ -65,11 +74,13 @@ const Cart = () => {
   };
 
   const clearCart = async () => {
+    if (!user) return;
+    
     try {
       const { error } = await supabase
         .from("cart_items")
         .delete()
-        .is("user_id", user?.id);
+        .eq("user_id", user.id);
 
       if (error) throw error;
       setCartItems([]);
@@ -115,7 +126,7 @@ const Cart = () => {
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || cartItems.length === 0) return;
+    if (!user || cartItems.length === 0 || !stripePromise) return;
 
     setIsSubmitting(true);
     try {
@@ -172,6 +183,14 @@ const Cart = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p>Chargement...</p>
+      </div>
+    );
+  }
+
+  if (!stripePromise) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-500">Le système de paiement n'est pas correctement configuré.</p>
       </div>
     );
   }
