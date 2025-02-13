@@ -2,13 +2,17 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/AuthProvider";
 import Particles from './Particles';
+import { useNavigate } from 'react-router-dom';  // Importer useNavigate pour la navigation
 
 export const HeroSection = () => {
   const { user } = useAuth();
   const userName = user?.email ? user.email.split("@")[0] : "Utilisateur";
+  const navigate = useNavigate(); // Initialiser le hook useNavigate
+
   const handleRedirect = () => {
-    window.open("creations", "_blank");
+    navigate("/creations");  // Utiliser navigate pour rediriger vers /creations
   };
+
   const smoothScroll = (targetY: number, duration = 300) => {
     const startY = window.scrollY;
     const diff = targetY - startY;
@@ -26,7 +30,7 @@ export const HeroSection = () => {
   
     requestAnimationFrame(step);
   };
-  
+
   const handleScrollToServices = () => {
     const section = document.getElementById("services");
     if (section) {
@@ -34,9 +38,6 @@ export const HeroSection = () => {
       smoothScroll(topOffset);
     }
   };
-  
-  
-  
 
   return (
     <section className="min-h-screen relative overflow-hidden bg-muted">
@@ -74,16 +75,16 @@ export const HeroSection = () => {
               Des sites web modernes, rapides et optimisés pour convertir vos visiteurs en clients
             </p>
             <div className="flex gap-4 justify-center">
-            <Button size="lg" className="bg-black hover:bg-gray" onClick={handleScrollToServices}>
-  Découvrir nos services
-  <ArrowRight className="ml-2 h-4 w-4" />
-</Button>
+              <Button size="lg" className="bg-black hover:bg-gray" onClick={handleScrollToServices}>
+                Découvrir nos services
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
 
               <div className="hero-section">
-      <Button size="lg" variant="outline" onClick={handleRedirect}>
-        Voir nos réalisations
-      </Button>
-    </div>
+                <Button size="lg" variant="outline" onClick={handleRedirect}>
+                  Voir nos réalisations
+                </Button>
+              </div>
             </div>
           </div>
         </div>
