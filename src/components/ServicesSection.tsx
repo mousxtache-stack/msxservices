@@ -1,11 +1,11 @@
-import { useToast } from "@/components/ui/use-toast"; // Assurez-vous que ce fichier existe
-import { useAuth } from "@/components/AuthProvider"; // Vérifiez que ce fichier existe
-import { useNavigate } from "react-router-dom"; // Vérifiez que react-router-dom est installé
-import { supabase } from "@/integrations/supabase/client"; // Assurez-vous que ce fichier existe
-import SpotlightCard from './SpotlightCard'; // Import SpotlightCard
-import { Button } from "@/components/ui/button"; // Vérifiez le chemin d'importation de Button
+
+import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/components/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import SpotlightCard from './SpotlightCard';
+import { Button } from "@/components/ui/button";
 import { Code, Smartphone, Zap } from "lucide-react";
-import LiquidChrome from './LiquidChrome'; // Import LiquidChrome
 
 const services = [
   {
@@ -59,7 +59,6 @@ export const ServicesSection = () => {
         description: `${service.title} a été ajouté à votre panier.`,
       });
 
-      // Navigate to cart after adding item
       navigate("/cart");
     } catch (error: any) {
       toast({
@@ -72,51 +71,46 @@ export const ServicesSection = () => {
   };
 
   return (
-    <>
-
-
-<section id="services" className="py-20 bg-white">
-  <div className="container mx-auto px-4">
-    <div className="text-center mb-16 animate-slide-up">
-      <h2 className="text-4xl font-bold mb-4">Nos Services</h2>
-      <p className="text-xl text-secondary/80">
-        Des solutions adaptées à vos besoins
-      </p>
-    </div>
-
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {services.map((service) => (
-              <SpotlightCard
-                key={service.title}
-                className="p-6 bg-white hover:shadow-lg transition-shadow animate-fade-in"
-                spotlightColor="rgba(0, 229, 255, 0.52)"
-              >
-                <service.icon className="h-12 w-12 text-primary mb-4" />
-                <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
-                <p className="text-xl font-semibold text-primary mb-4">
-                  {service.displayPrice}
-                </p>
-                <p className="text-secondary/80 mb-6">{service.description}</p>
-                <ul className="space-y-2 mb-6">
-                  {service.features.map((feature) => (
-                    <li key={feature} className="flex items-center text-sm">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary mr-2" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  onClick={() => handleAddToCart(service)}
-                  className="w-full"
-                >
-                  Ajouter au panier
-                </Button>
-              </SpotlightCard>
-            ))}
-          </div>
+    <section id="services" className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16 animate-slide-up">
+          <h2 className="text-4xl font-bold mb-4">Nos Services</h2>
+          <p className="text-xl text-secondary/80">
+            Des solutions adaptées à vos besoins
+          </p>
         </div>
-      </section>
-    </>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {services.map((service) => (
+            <SpotlightCard
+              key={service.title}
+              className="p-6 bg-white hover:shadow-lg transition-shadow animate-fade-in"
+              spotlightColor="rgba(0, 229, 255, 0.52)"
+            >
+              <service.icon className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
+              <p className="text-xl font-semibold text-primary mb-4">
+                {service.displayPrice}
+              </p>
+              <p className="text-secondary/80 mb-6">{service.description}</p>
+              <ul className="space-y-2 mb-6">
+                {service.features.map((feature) => (
+                  <li key={feature} className="flex items-center text-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary mr-2" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                onClick={() => handleAddToCart(service)}
+                className="w-full"
+              >
+                Ajouter au panier
+              </Button>
+            </SpotlightCard>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 };
