@@ -11,11 +11,6 @@ import ScrollToTopButton from "./ScrollToTopButton"; // Importation du composant
 import { Scrollbar } from 'react-scrollbars-custom'; // Importation correcte
 import SpotlightCard2 from './SpotlightCard2'; 
 
-
-
-
-
-
 const services = [
   {
     title: "Site Vitrine",
@@ -216,47 +211,10 @@ export const ServicesSection = () => {
             ))}
           </div>
         </div>
+      </section>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {services.map((service) => (
-            <SpotlightCard
-              key={service.title}
-              className="p-6 bg-white hover:shadow-lg transition-shadow animate-fade-in"
-              spotlightColor="rgba(0, 229, 255, 0.52)"
-            >
-              <service.icon className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
-              <p className="text-xl font-semibold text-primary mb-4">
-                {service.displayPrice}
-              </p>
-              <p className="text-secondary/80 mb-6">{service.description}</p>
-              <ul className="space-y-2 mb-6">
-                {service.features.map((feature) => (
-                  <li key={feature} className="flex items-center text-sm">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary mr-2" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <Button 
-                onClick={() => handleAddToCart(service)}
-                className="w-full"
-              >
-                Ajouter au panier
-              </Button>
-            </SpotlightCard>
-          ))}
-        </div>
-      </div>
-    </section>
+      {/* Le bouton pour remonter */}
+      <ScrollToTopButton />
+    </>
   );
 };
-
-<SpotlightCard2 className="custom-spotlight-card" spotlightColor="rgba(0, 229, 255, 0.2)">
-  // Content goes here
-</SpotlightCard2>
-
-
-
-{/* Le bouton pour remonter */}
-<ScrollToTopButton />
