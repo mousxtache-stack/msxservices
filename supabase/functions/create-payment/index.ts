@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
 import Stripe from 'https://esm.sh/stripe@13.3.0'
@@ -15,7 +16,11 @@ serve(async (req) => {
 
   try {
     // Récupérer la clé secrète Stripe depuis les variables d'environnement
+<<<<<<< HEAD
     const stripeSecretKey = Deno.env.get('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');
+=======
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+>>>>>>> 2f797ec6778708bca0b2fdc2364c1818e8a3ace1
     if (!stripeSecretKey) {
       throw new Error('La clé secrète Stripe n\'est pas configurée');
     }

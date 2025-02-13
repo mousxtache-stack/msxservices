@@ -1,10 +1,15 @@
+<<<<<<< HEAD
 // src/components/ServicesSection.tsx
+=======
+
+>>>>>>> 2f797ec6778708bca0b2fdc2364c1818e8a3ace1
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/components/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SpotlightCard from './SpotlightCard';
 import { Button } from "@/components/ui/button";
+<<<<<<< HEAD
 import { Code, Smartphone, Zap, LayoutDashboard, Cloud, Sparkles, Brush, Globe, Landmark, GalleryVerticalEnd, GalleryVertical } from "lucide-react";
 import { useState } from "react";
 import ScrollToTopButton from "./ScrollToTopButton"; // Importation du composant ScrollToTopButton
@@ -15,6 +20,9 @@ import SpotlightCard2 from './SpotlightCard2';
 
 
 
+=======
+import { Code, Smartphone, Zap } from "lucide-react";
+>>>>>>> 2f797ec6778708bca0b2fdc2364c1818e8a3ace1
 
 const services = [
   {
@@ -147,6 +155,7 @@ export const ServicesSection = () => {
   };
 
   return (
+<<<<<<< HEAD
     <>
       <section id="services" className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -215,9 +224,49 @@ export const ServicesSection = () => {
               </SpotlightCard>
             ))}
           </div>
+=======
+    <section id="services" className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16 animate-slide-up">
+          <h2 className="text-4xl font-bold mb-4">Nos Services</h2>
+          <p className="text-xl text-secondary/80">
+            Des solutions adaptées à vos besoins
+          </p>
+>>>>>>> 2f797ec6778708bca0b2fdc2364c1818e8a3ace1
         </div>
-      </section>
-    </>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {services.map((service) => (
+            <SpotlightCard
+              key={service.title}
+              className="p-6 bg-white hover:shadow-lg transition-shadow animate-fade-in"
+              spotlightColor="rgba(0, 229, 255, 0.52)"
+            >
+              <service.icon className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
+              <p className="text-xl font-semibold text-primary mb-4">
+                {service.displayPrice}
+              </p>
+              <p className="text-secondary/80 mb-6">{service.description}</p>
+              <ul className="space-y-2 mb-6">
+                {service.features.map((feature) => (
+                  <li key={feature} className="flex items-center text-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary mr-2" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                onClick={() => handleAddToCart(service)}
+                className="w-full"
+              >
+                Ajouter au panier
+              </Button>
+            </SpotlightCard>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 };
 

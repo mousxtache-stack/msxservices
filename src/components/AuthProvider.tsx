@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,4 +74,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       {!loading && children}
     </AuthContext.Provider>
   );
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 2f797ec6778708bca0b2fdc2364c1818e8a3ace1

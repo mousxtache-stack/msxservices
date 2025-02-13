@@ -9,7 +9,12 @@ import { OrderSummary } from "@/components/cart/OrderSummary";
 import { PaymentSection } from "@/components/cart/PaymentSection";
 import { toast } from "sonner";
 
+<<<<<<< HEAD
 const stripePromise = loadStripe('pk_live_51QpqefKbgfBGG4YhIz2mLSr65ooRvnUVWLzjlMeO38HNP4WsZvcOayLjU59J3EdRih2aXRHuAFLTvTEYcA5KobhE004IpsCArt');
+=======
+// Initialisation de Stripe avec la clé publique de test
+const stripePromise = loadStripe('pk_test_51OtO4lJmE7uS7jBZpv9X74VkSmEr4Fz8PTbhVSjnI5QdXPGXF5L10y51XPYMzOQmGjDlHAJ5fYG3M56u13bUPuC100Jt0RHoIr');
+>>>>>>> 2f797ec6778708bca0b2fdc2364c1818e8a3ace1
 
 interface CartItem {
   id: string;
