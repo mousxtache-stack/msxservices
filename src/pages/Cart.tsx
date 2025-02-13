@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
@@ -10,13 +9,8 @@ import { OrderSummary } from "@/components/cart/OrderSummary";
 import { PaymentSection } from "@/components/cart/PaymentSection";
 import { toast } from "sonner";
 
-// Vérification de la présence de la clé publique Stripe
-const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-if (!stripePublicKey) {
-  console.error('La clé publique Stripe n\'est pas configurée');
-}
-
-const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
+// Initialisation de Stripe avec la clé publique de test
+const stripePromise = loadStripe('pk_test_51OtO4lJmE7uS7jBZpv9X74VkSmEr4Fz8PTbhVSjnI5QdXPGXF5L10y51XPYMzOQmGjDlHAJ5fYG3M56u13bUPuC100Jt0RHoIr');
 
 interface CartItem {
   id: string;
