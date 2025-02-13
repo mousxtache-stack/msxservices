@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
@@ -71,7 +72,24 @@ const Dashboard = () => {
     },
     enabled: !!user && profile !== undefined,
   });
-  
+
+  const { data: editors, isLoading: editorsLoading } = useQuery({
+    queryKey: ["editors"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("editors") // 🔥 Table "editors"
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Erreur récupération des éditeurs:", error);
+        throw error;
+      }
+
+      console.log("Éditeurs récupérés:", data);
+      return data;
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -101,6 +119,24 @@ const Dashboard = () => {
             <p>Chargement...</p>
           ) : (
             <OrderList orders={orders || []} />
+          )}
+        </div>
+
+        {/* Affichage des éditeurs */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Éditeurs</h2>
+          {editorsLoading ? (
+            <p>Chargement des éditeurs...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {editors?.map((editor) => (
+                <Card key={editor.id} className="p-6 hover:shadow-lg transition-shadow">
+                  <h3 className="text-xl font-semibold">{editor.name}</h3>
+                  <p className="text-gray-600">{editor.email}</p>
+                  <p className="text-gray-500">Ajouté le : {new Date(editor.created_at).toLocaleDateString()}</p>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
       </div>

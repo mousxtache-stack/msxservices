@@ -9,7 +9,10 @@ import Auth from "./pages/Auth";
 import Cart from "./pages/Cart";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import CreationsList from "@/pages/Creations";
 import SettingsPage from "./pages/Settings"; // Assurez-vous d'importer la page des réglages
+import { ContactSection } from "./components/ContactSection";
+import { Helmet } from 'react-helmet'; // Import de Helmet
 
 const queryClient = new QueryClient();
 
@@ -20,6 +23,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <Helmet>
+            <title>MSX WebServices</title>
+            <object type="image/svg+xml" data="/logo.svg" className="h-12 w-auto"></object>
+
+          </Helmet>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
@@ -27,6 +35,8 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<SettingsPage />} /> {/* Nouvelle route pour les réglages */}
             <Route path="*" element={<NotFound />} />
+            <Route path="/creations" element={<CreationsList />} />
+            <Route path="/contact" element={<ContactSection />} /> {/* Route pour la section Contact */}
           </Routes>
         </AuthProvider>
       </BrowserRouter>

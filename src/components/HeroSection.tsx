@@ -7,7 +7,7 @@ export const HeroSection = () => {
   const { user } = useAuth();
   const userName = user?.email ? user.email.split("@")[0] : "Utilisateur";
   const handleRedirect = () => {
-    window.open("https://mousxtache-stack.github.io/website-byme-index/index.html", "_blank");
+    window.open("creations", "_blank");
   };
   const smoothScroll = (targetY: number, duration = 300) => {
     const startY = window.scrollY;
