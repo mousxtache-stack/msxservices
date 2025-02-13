@@ -1,15 +1,10 @@
-<<<<<<< HEAD
 // src/components/ServicesSection.tsx
-=======
-
->>>>>>> 2f797ec6778708bca0b2fdc2364c1818e8a3ace1
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/components/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SpotlightCard from './SpotlightCard';
 import { Button } from "@/components/ui/button";
-<<<<<<< HEAD
 import { Code, Smartphone, Zap, LayoutDashboard, Cloud, Sparkles, Brush, Globe, Landmark, GalleryVerticalEnd, GalleryVertical } from "lucide-react";
 import { useState } from "react";
 import ScrollToTopButton from "./ScrollToTopButton"; // Importation du composant ScrollToTopButton
@@ -20,9 +15,6 @@ import SpotlightCard2 from './SpotlightCard2';
 
 
 
-=======
-import { Code, Smartphone, Zap } from "lucide-react";
->>>>>>> 2f797ec6778708bca0b2fdc2364c1818e8a3ace1
 
 const services = [
   {
