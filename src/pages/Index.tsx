@@ -8,7 +8,8 @@ import { useLocation, Link, useNavigate } from "react-router-dom";  // Import de
 import Dock from "./Dock"; // Assure-toi que Dock.tsx est bien importé
 
 // Import des icônes
-import { VscHome, VscArchive, VscAccount, VscSettingsGear, VscGitStashPop, VscHeart } from "react-icons/vsc";
+import { VscHome, VscArchive, VscAccount, VscSettingsGear, VscGitStashPop, VscHeart, VscDashboard, VscVmOutline, } from "react-icons/vsc";
+import { MdOutlineSpaceDashboard } from "react-icons/md";
 
 function App() {
   const location = useLocation();
@@ -25,6 +26,11 @@ function App() {
       icon: <VscHeart size={18} />,
       label: "Panier",  // Changement du label en "Panier"
       onClick: () => navigate("/cart"),  // Redirection vers Panier
+    },
+    {
+      icon: <MdOutlineSpaceDashboard size={18} />,
+      label: "Dashboard",
+      onClick: () => navigate("/dashboard"),  // Redirection vers Profile
     },
 
     {
