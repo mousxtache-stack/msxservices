@@ -147,7 +147,6 @@ export const ServicesSection = () => {
   };
 
   return (
-<<<<<<< HEAD
     <>
       <section id="services" className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -216,15 +215,6 @@ export const ServicesSection = () => {
               </SpotlightCard>
             ))}
           </div>
-=======
-    <section id="services" className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16 animate-slide-up">
-          <h2 className="text-4xl font-bold mb-4">Nos Services</h2>
-          <p className="text-xl text-secondary/80">
-            Des solutions adaptées à vos besoins
-          </p>
->>>>>>> 2f797ec6778708bca0b2fdc2364c1818e8a3ace1
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
