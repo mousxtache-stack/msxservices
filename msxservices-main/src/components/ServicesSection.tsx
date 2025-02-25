@@ -14,23 +14,23 @@ import SpotlightCard2 from './SpotlightCard2';
 const services = [
   {
     title: "Site Vitrine",
-    price: 999,
-    displayPrice: "à partir de 999€",
+    price: 0,
+    displayPrice: "sur devis",
     description: "Un site élégant pour présenter votre activité",
     icon: Smartphone,
     features: ["Design sur mesure", "Responsive", "Optimisé SEO"],
   },
   {
     title: "E-commerce",
-    price: 1999,
-    displayPrice: "à partir de 1999€",
+    price: 0,
+    displayPrice: "sur devis€",
     description: "Vendez vos produits en ligne",
     icon: Zap,
     features: ["Paiement sécurisé", "Gestion des stocks", "Interface admin"],
   },
   {
     title: "Application Web",
-    price: 2999,
+    price: 0,
     displayPrice: "sur devis",
     description: "Solutions personnalisées pour votre entreprise",
     icon: Code,
